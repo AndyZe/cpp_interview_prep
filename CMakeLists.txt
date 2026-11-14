@@ -22,3 +22,5 @@ endfunction()
 add_question(anagram_counter)
 
 add_question(first_nonrepeating_character)
+
+add_question(max_value_template)
