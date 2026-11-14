@@ -1,5 +1,4 @@
 #include <iostream>
-#include <optional>
 
 // Write a C++ function that takes a lowercase string s and returns the index of the first character that does not
 // repeat anywhere in the string. If every character repeats, return -1.
@@ -26,7 +25,7 @@ int first_nonrepeat_character(const std::string& s)
 }
 
 int main() {
-  std::string input{"test"};
+  std::string input{"teaste"};
   int first_nonrepeated_char = first_nonrepeat_character(input);
   if (first_nonrepeated_char >= 0)
   {
