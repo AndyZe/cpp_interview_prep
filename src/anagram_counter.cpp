@@ -69,28 +69,27 @@ std::vector<std::vector<std::string>> find_groups(const std::vector<std::string>
       output_anagrams.back().push_back(word_group.second.at(word_idx));
 
       // Compare to every other word of same length
+      std::vector<std::string> words_found = {};
       for (size_t other_word_idx = 0; other_word_idx < word_group.second.size(); ++other_word_idx)
       {
         if (other_word_idx == word_idx)
         {
-          // Remove this word from future consideration
-          std::erase(word_group.second, word_group.second.at(word_idx));
           continue;
         }
         if (is_anagram(word_group.second.at(word_idx), word_group.second.at(other_word_idx)))
         {
           // std::vector<std::vector<std::string>> output_anagrams;
           output_anagrams.back().push_back(word_group.second.at(other_word_idx));
-          // Remove other_word from future consideration
-          std::erase(word_group.second, word_group.second.at(other_word_idx));
-          // Remove this word from future consideration
-          std::erase(word_group.second, word_group.second.at(word_idx));
+          std::cout << "Anagram with " << word_group.second.at(other_word_idx) << std::endl;
+          words_found.push_back(word_group.second.at(other_word_idx));
         }
-        else
-        {
-          // Remove this word from future consideration
-          std::erase(word_group.second, word_group.second.at(word_idx));
-        }
+      }
+      // Remove this word from future consideration
+      std::erase(word_group.second, word_group.second.at(word_idx));
+      // Remove its anagrams from future consideration
+      for (auto w : words_found)
+      {
+        std::erase(word_group.second, w);
       }
     }
   }
