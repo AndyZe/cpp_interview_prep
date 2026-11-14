@@ -19,10 +19,8 @@ function(add_question name)
     $<$<CONFIG:Debug>:-fsanitize=address,undefined>)
 endfunction()
 
+add_question(abstract_shape_class)
 add_question(anagram_counter)
-
-add_question(first_nonrepeating_character)
-
-add_question(max_value_template)
-
 add_question(double_pointer_value)
+add_question(first_nonrepeating_character)
+add_question(max_value_template)
