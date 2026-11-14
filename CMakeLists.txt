@@ -20,3 +20,5 @@ function(add_question name)
 endfunction()
 
 add_question(anagram_counter)
+
+add_question(first_nonrepeating_character)
