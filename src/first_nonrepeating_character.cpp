@@ -1,22 +1,25 @@
-#include <algorithm>
 #include <iostream>
+#include <optional>
 
 // Write a C++ function that takes a lowercase string s and returns the index of the first character that does not
 // repeat anywhere in the string. If every character repeats, return -1.
 
 int first_nonrepeat_character(const std::string& s)
 {
-  std::string sorted = s;
-  std::sort(sorted.begin(), sorted.end());
-  // Compare every char to every other char
-  for (int char_idx = 0; char_idx < sorted.length() - 1; ++char_idx)
+  // count each character
+  for (size_t char_idx = 0; char_idx < s.length() - 1; ++char_idx)
   {
-    // Since the string is sorted, just need to check the next idx
-    if (sorted[char_idx] != sorted[char_idx + 1])
+    size_t letter_count = 1;
+    for (size_t next_idx = char_idx + 1; next_idx < s.length(); ++next_idx)
     {
-      // Found a non-repeated character
-      // Convert back to unsorted idx
-      return std::find(s.begin(), s.end(), sorted[char_idx]) - s.begin();
+      if (s[char_idx] == s[next_idx])
+      {
+        ++letter_count;
+      }
+    }
+    if (letter_count == 1)
+    {
+      return char_idx;
     }
   }
   return -1;
@@ -25,6 +28,13 @@ int first_nonrepeat_character(const std::string& s)
 int main() {
   std::string input{"test"};
   int first_nonrepeated_char = first_nonrepeat_character(input);
-  std::cout << input[first_nonrepeated_char] << std::endl;
-  return first_nonrepeated_char;
+  if (first_nonrepeated_char >= 0)
+  {
+    std::cout << input[first_nonrepeated_char] << std::endl;
+  }
+  else
+  {
+    std::cout << "No repeats found" << std::endl;
+  }
+  return 0;
 }
