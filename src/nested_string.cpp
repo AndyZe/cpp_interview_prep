@@ -27,7 +27,7 @@ std::string expand_nested(std::string input) noexcept
     output = input.substr(0, left_bracket - 2);
     // Trim the leading letters from input
     input = input.substr(left_bracket - 1, input.length() - 1);
-    std::string chars_in_brackets = ;
+    //std::string chars_in_brackets = ;
   }
   // if no brackets remain, all remaining chars go to output
   else
