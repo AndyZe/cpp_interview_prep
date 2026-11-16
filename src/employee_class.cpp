@@ -1,3 +1,4 @@
+#include <memory>
 #include <vector>
 
 // Problem: A company has three kinds of employees, and each kind is paid differently:
@@ -30,20 +31,35 @@
 class Employee
 {
 public:
+  explicit Employee(size_t id) : id_(id) {}
   virtual ~Employee() = default;
   virtual bool logHours(size_t hours) = 0;
   virtual void endMonth() = 0;
+  virtual double getPay(int id) = 0;
 
 private:
-  size_t id_;
+  const size_t id_;
 };
 
 class Salaried : public Employee
 {
 public:
+  Salaried(size_t id, double salary) : Employee(id), salary_(salary)
+  {
+  }
+
   bool logHours(size_t hours) override
   {
     return false;
+  }
+
+  void endMonth() override
+  {
+  }
+
+  double getPay(int id) override
+  {
+    return salary_ / 12;
   }
 
 private:
@@ -63,6 +79,11 @@ class Contractor : public Employee
     hours_ = 0;
   }
 
+  double getPay(int id) override
+  {
+    return hourly_rate_ * hours_;
+  }
+
 private:
   size_t hourly_rate_;
   size_t hours_;
@@ -74,6 +95,8 @@ public:
   // Add new Salaried employee
   void addSalaried(int id, double annualSalary)
   {
+    Salaried new_salaried{id, annualSalary};
+    employees_.push_back(std::make_unique<Salaried>(new_salaried));
   }
 
   // Add new Hourly employee
@@ -104,14 +127,14 @@ public:
   // starts a new month by resetting every employee’s logged hours and sales to zero
   void endMonth()
   {
-    for (auto employee : employees_)
+    for (auto& employee : employees_)
     {
-      employee.endMonth();
+      employee->endMonth();
     }
   }
 
 private:
-  std::vector<Employee> employees_;
+  std::vector<std::unique_ptr<Employee>> employees_;
 };
 
 int main() {
