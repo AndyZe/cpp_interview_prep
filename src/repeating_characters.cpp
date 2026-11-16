@@ -11,7 +11,7 @@ size_t find_longest(const std::string& input) noexcept
   size_t longest_yet = 0;
   for (size_t i = 0; i < input.length(); ++i)
   {
-    // If it repeats the first char, drop the first char from the sliding window
+    // If it repeats, drop "up to repeated" from the sliding window
     auto repeated_char = std::find(sliding_window.begin(), sliding_window.end(), input[i]);
     if (repeated_char != sliding_window.end())
     {
