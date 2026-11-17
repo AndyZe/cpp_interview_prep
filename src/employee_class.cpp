@@ -33,9 +33,12 @@ class Employee
 public:
   explicit Employee(size_t id) : id_(id) {}
   virtual ~Employee() = default;
-  virtual bool logHours(size_t hours) = 0;
-  virtual void endMonth() = 0;
-  virtual double getPay(int id) = 0;
+  virtual bool logHours(double hours)
+  {
+    return false;
+  };
+  virtual void endMonth(){};
+  virtual double getPay() = 0;
 
 private:
   const size_t id_;
@@ -48,27 +51,23 @@ public:
   {
   }
 
-  bool logHours(size_t hours) override
-  {
-    return false;
-  }
-
-  void endMonth() override
-  {
-  }
-
-  double getPay(int id) override
+  double getPay() override
   {
     return salary_ / 12;
   }
 
 private:
-  size_t salary_;
+  double salary_;
 };
 
 class Contractor : public Employee
 {
-  bool logHours(size_t hours) override
+  Contractor (size_t id, double hourly_rate) : Employee(id), hourly_rate_(hourly_rate)
+  {
+    ;
+  }
+
+  bool logHours(double hours) override
   {
     hours_ += hours;
     return true;
@@ -79,24 +78,23 @@ class Contractor : public Employee
     hours_ = 0;
   }
 
-  double getPay(int id) override
+  double getPay() override
   {
     return hourly_rate_ * hours_;
   }
 
 private:
-  size_t hourly_rate_;
-  size_t hours_;
+  double hourly_rate_;
+  double hours_;
 };
 
 class Payroll
 {
 public:
   // Add new Salaried employee
-  void addSalaried(int id, double annualSalary)
+  void addSalaried(size_t id, double annualSalary)
   {
-    Salaried new_salaried{id, annualSalary};
-    employees_.push_back(std::make_unique<Salaried>(new_salaried));
+    employees_.push_back(std::make_unique<Salaried>(id, annualSalary));
   }
 
   // Add new Hourly employee
@@ -114,7 +112,7 @@ public:
   double getPay(int id)
   {
     // TODO
-    return 0;
+    return employees_.at(id) -> getPay();
   }
 
   // returns the sum of this month’s pay for all employees
