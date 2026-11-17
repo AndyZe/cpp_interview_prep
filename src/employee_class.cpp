@@ -1,3 +1,4 @@
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -31,7 +32,7 @@
 class Employee
 {
 public:
-  explicit Employee(size_t id) : id_(id) {}
+  explicit Employee() {}
   virtual ~Employee() = default;
   virtual bool logHours(double hours)
   {
@@ -39,15 +40,12 @@ public:
   };
   virtual void endMonth(){};
   virtual double getPay() = 0;
-
-private:
-  const size_t id_;
 };
 
 class Salaried : public Employee
 {
 public:
-  Salaried(size_t id, double salary) : Employee(id), salary_(salary)
+  Salaried(double salary) : salary_(salary)
   {
   }
 
@@ -62,7 +60,7 @@ private:
 
 class Contractor : public Employee
 {
-  Contractor (size_t id, double hourly_rate) : Employee(id), hourly_rate_(hourly_rate)
+  Contractor (double hourly_rate) : hourly_rate_(hourly_rate)
   {
     ;
   }
@@ -94,22 +92,22 @@ public:
   // Add new Salaried employee
   void addSalaried(size_t id, double annualSalary)
   {
-    employees_.push_back(std::make_unique<Salaried>(id, annualSalary));
+    employees_.insert({id, std::make_unique<Salaried>(annualSalary)});
   }
 
   // Add new Hourly employee
-  void addHourly(int id, double hourlyRate)
+  void addHourly(size_t id, double hourlyRate)
   {
   }
 
   // adds hours worked this month. Returns false and does nothing if the employee isn’t hourly.
-  bool logHours(int id, double hours)
+  bool logHours(size_t id, double hours)
   {
     return true;
   }
 
   // returns this month’s pay for one employee.
-  double getPay(int id)
+  double getPay(size_t id)
   {
     // TODO
     return employees_.at(id) -> getPay();
@@ -125,14 +123,14 @@ public:
   // starts a new month by resetting every employee’s logged hours and sales to zero
   void endMonth()
   {
-    for (auto& employee : employees_)
+    for (const auto& [id, employee] : employees_)
     {
       employee->endMonth();
     }
   }
 
 private:
-  std::vector<std::unique_ptr<Employee>> employees_;
+  std::map<size_t, std::unique_ptr<Employee>> employees_;
 };
 
 int main() {
