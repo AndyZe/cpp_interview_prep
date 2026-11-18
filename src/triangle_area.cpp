@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 // Given three 2D points, compute triangle area with the cross product, |(B−A) × (C−A)| / 2.
@@ -14,6 +15,11 @@ struct Vector
   float y;
 };
 
+Vector operator-(Point a, Point b)
+{
+  return Vector(b.x - a.x, b.y - a.y);
+}
+
 float cross_produt(const Vector a, const Vector b)
 {
   return a.x * b.y - a.y * b.x;
@@ -21,8 +27,8 @@ float cross_produt(const Vector a, const Vector b)
 
 float triangle_area(const Point a, const Point b, const Point c)
 {
-  Vector b_minus_a(b.x - a.x, b.y - a.y);
-  Vector c_minus_a(c.x - a.x, c.y - a.y);
+  Vector b_minus_a = b - a;
+  Vector c_minus_a = c - a;
   float cross = cross_produt(b_minus_a, c_minus_a);
   return std::abs(cross) / 2;
 }
