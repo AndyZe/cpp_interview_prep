@@ -15,6 +15,8 @@ std::vector<std::vector<std::string>> find_anagrams(const std::vector<std::strin
     for (const auto& w : words) {
         std::string key = w;
         std::sort(key.begin(), key.end());
+        // operator[] default-constructs an empty vector if `key` isn't in the map yet,
+        // so the first word for a key starts a new group and later ones append to it.
         groups[key].push_back(w);
     }
     std::vector<std::vector<std::string>> result;
