@@ -17,7 +17,7 @@ struct Booking
   float end;
 };
 
-std::vector<Booking> calendar_merge(const std::vector<Booking>& bookings) noexcept
+std::vector<Booking> calendar_merge(const std::vector<Booking>& bookings)
 {
   if (bookings.size() < 2)
   {
@@ -30,20 +30,25 @@ std::vector<Booking> calendar_merge(const std::vector<Booking>& bookings) noexce
             [](const Booking& a, const Booking& b) { return a.start < b.start; });
 
   // Merge overlaps between consecutive blocks
-  for (size_t booking_idx = 0; booking_idx < sorted_bookings.size() - 1; ++ booking_idx)
+  for (size_t booking_idx = 0; booking_idx < sorted_bookings.size() - 1;)
   {
     // Partial overlap of bookings
-    if ((sorted_bookings.at(booking_idx).end > sorted_bookings.at(booking_idx + 1).start) &&
+    if ((sorted_bookings.at(booking_idx).end >= sorted_bookings.at(booking_idx + 1).start) &&
         (sorted_bookings.at(booking_idx).end < sorted_bookings.at(booking_idx + 1).end))
     {
       sorted_bookings.at(booking_idx).end = sorted_bookings.at(booking_idx + 1).end;
       sorted_bookings.erase(sorted_bookings.begin() + booking_idx + 1);
     }
-    // booking_idx completely covers booking_idx
+    // booking_idx completely covers booking_idx + 1
     else if ((sorted_bookings.at(booking_idx).end > sorted_bookings.at(booking_idx + 1).start) &&
-             (sorted_bookings.at(booking_idx).end > sorted_bookings.at(booking_idx + 1).end))
+             (sorted_bookings.at(booking_idx).end >= sorted_bookings.at(booking_idx + 1).end))
     {
       sorted_bookings.erase(sorted_bookings.begin() + booking_idx + 1);
+    }
+    // Must manually advance if we did not delete an element
+    else
+    {
+      ++booking_idx;
     }
   }
 
