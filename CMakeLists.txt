@@ -21,6 +21,7 @@ endfunction()
 
 add_question(abstract_shape_class)
 add_question(anagram_counter)
+add_question(calendar_merge)
 add_question(double_pointer_value)
 add_question(employee_class)
 add_question(even_numbers)

@@ -2,7 +2,7 @@
 #include <cstring>
 #include <iostream>
 
-// Write a function witj the following signature : void reverse(char* str) ; 
+// Write a function with the following signature : void reverse(char* str) ; 
 
 void reverse(char* str)
 {
