@@ -8,8 +8,8 @@ void double_pointer_value(int* int_ptr)
 }
 
 int main() {
-  int my_ptr = 3;
-  double_pointer_value(&my_ptr);
-  std::cout << my_ptr << std::endl;
+  int my_int = 3;
+  double_pointer_value(&my_int);
+  std::cout << my_int << std::endl;
   return 0;
 }
