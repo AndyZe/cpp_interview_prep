@@ -40,3 +40,7 @@ add_question(two_rectangle_area)
 add_question(raii)
 find_package(CURL REQUIRED)
 target_link_libraries(raii PRIVATE CURL::libcurl)
+
+add_question(google_doc_retrieval)
+find_package(CURL REQUIRED)
+target_link_libraries(google_doc_retrieval PRIVATE CURL::libcurl)
