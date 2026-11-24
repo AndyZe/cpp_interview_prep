@@ -1,12 +1,13 @@
-#include <curl/curl.h>
 #include <algorithm>
 #include <cctype>
 #include <charconv>
+#include <cstdlib>
+#include <curl/curl.h>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
-#include <string>
 #include <string_view>
+#include <string>
 #include <vector>
 
 // Retrieve the chars from a google doc and print them, in grid format
@@ -85,7 +86,7 @@ struct GridChar
 };
 
 // Strip HTML tags and decode the entities Google Docs uses to escape text.
-static std::string htmlToText(std::string_view html)
+static std::string html_to_text(std::string_view html)
 {
   static constexpr std::pair<std::string_view, std::string_view> entities[] = {
     {"&amp;", "&"}, {"&lt;", "<"}, {"&gt;", ">"}, {"&quot;", "\""}, {"&#39;", "'"}};
@@ -112,7 +113,7 @@ static std::string htmlToText(std::string_view html)
   return out;
 }
 
-static std::optional<int> parseInt(std::string_view s)
+static std::optional<int> parse_int(std::string_view s)
 {
   while (!s.empty() && std::isspace(static_cast<unsigned char>(s.front()))) s.remove_prefix(1);
   while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) s.remove_suffix(1);
@@ -126,7 +127,7 @@ static std::optional<int> parseInt(std::string_view s)
 }
 
 // Return the text of each <td> in one table row.
-static std::vector<std::string> rowCells(std::string_view row)
+static std::vector<std::string> row_cells(std::string_view row)
 {
   std::vector<std::string> cells;
   size_t pos = 0;
@@ -135,7 +136,7 @@ static std::vector<std::string> rowCells(std::string_view row)
     if (content_start == std::string_view::npos) break;
     size_t content_end = row.find("</td>", content_start);
     if (content_end == std::string_view::npos) break;
-    cells.push_back(htmlToText(row.substr(content_start + 1, content_end - content_start - 1)));
+    cells.push_back(html_to_text(row.substr(content_start + 1, content_end - content_start - 1)));
     pos = content_end;
   }
   return cells;
@@ -143,7 +144,7 @@ static std::vector<std::string> rowCells(std::string_view row)
 
 // Read the (x-coordinate, character, y-coordinate) rows from the first <table> in the page.
 // Rows whose coordinates aren't integers, like the header row, are skipped.
-static std::vector<GridChar> parseTable(std::string_view html)
+static std::vector<GridChar> parse_table(std::string_view html)
 {
   size_t table_start = html.find("<table");
   size_t table_end = html.find("</table>", table_start);
@@ -157,12 +158,12 @@ static std::vector<GridChar> parseTable(std::string_view html)
   while ((pos = table.find("<tr", pos)) != std::string_view::npos) {
     size_t row_end = table.find("</tr>", pos);
     if (row_end == std::string_view::npos) break;
-    std::vector<std::string> cells = rowCells(table.substr(pos, row_end - pos));
+    std::vector<std::string> cells = row_cells(table.substr(pos, row_end - pos));
     pos = row_end;
 
     if (cells.size() != 3) continue;
-    std::optional<int> x = parseInt(cells[0]);
-    std::optional<int> y = parseInt(cells[2]);
+    std::optional<int> x = parse_int(cells[0]);
+    std::optional<int> y = parse_int(cells[2]);
     if (!x || !y) continue;
     chars.push_back({*x, *y, cells[1]});
   }
@@ -171,7 +172,7 @@ static std::vector<GridChar> parseTable(std::string_view html)
 
 // Print the characters in a grid, with spaces in empty positions.
 // y increases upward, so the largest y is the top row.
-static void printGrid(const std::vector<GridChar>& chars)
+static void print_grid(const std::vector<GridChar>& chars)
 {
   if (chars.empty()) return;
 
@@ -199,17 +200,22 @@ static void printGrid(const std::vector<GridChar>& chars)
   }
 }
 
+void print_google_doc_chars(const std::string& url)
+{
+  CurlSender curl_rest;
+  std::string html = curl_rest.sendGETRequest(url);
+  print_grid(parse_table(html));
+}
+
 int main()
 {
   const std::string url = "https://docs.google.com/document/d/e/2PACX-1vTMOmshQe8YvaRXi6gEPKKlsC6UpFJSMAk4mQjLm_u1gmHdVVTaeh7nBNFBRlui0sTZ-snGwZM4DBCT/pub";
   try {
-    CurlSender curl_rest;
-    std::string html = curl_rest.sendGETRequest(url);
-    printGrid(parseTable(html));
+    print_google_doc_chars(url);
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
-    return 1;
+    return EXIT_FAILURE;
   }
   std::cout << "It's expected now to get a libcurl memory leak warning. That's libcurl, not this program." << std::endl;
-  return 0;
+  return EXIT_SUCCESS;
 }
